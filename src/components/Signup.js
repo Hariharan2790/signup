@@ -24,7 +24,10 @@ import Select from "@mui/material/Select";
 
 function Signup() {
   const [data, setData] = useState([]);
-  const [getCountry, setGetCountry] = useState();
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [getState, setGetState] = useState([]);
+  const [selectedState, setSelectedState] = useState();
+  const [cities, setCities] = useState([]);
 
   useEffect(() => {
     axios
@@ -39,7 +42,19 @@ function Signup() {
 
   const handleCountryChange = (e) => {
     let states = data.filter((state) => state.country === e.target.value);
-    console.log(states);
+    // console.log(states);
+    setSelectedCountry(e.target.value);
+    states = [...new Set(states.map((item) => item.subcountry))];
+    states.sort();
+    // console.log(states);
+    setGetState(states);
+  };
+
+  const handleStateChange = (e) => {
+    let cities = data.filter((city) => city.subcountry === e.target.value);
+    console.log(cities);
+    setCities(cities);
+    cities.sort();
   };
 
   const paperStyle = { padding: "30px 20px", width: 300, margin: "20px auto" };
@@ -50,12 +65,12 @@ function Signup() {
     email: "",
     gender: "",
     phonenumber: "",
-    password: "",
-    confirmpassword: "",
-    termsandConditions: false,
     country: "",
     state: "",
     city: "",
+    password: "",
+    confirmpassword: "",
+    termsandConditions: false,
   };
   const validationSchema = Yup.object().shape({
     name: Yup.string().min(3, "its too short").required("Required"),
@@ -163,10 +178,11 @@ function Signup() {
                   autoWidth
                   label="Country"
                   name="country"
-                  value={getCountry}
+                  value={selectedCountry}
                 >
+                  <MenuItem value="">Select Country</MenuItem>
                   {country.map((items) => (
-                    <MenuItem key={items} value={getCountry}>
+                    <MenuItem key={items} value={items} name="country">
                       {items}
                     </MenuItem>
                   ))}
@@ -174,6 +190,52 @@ function Signup() {
               </FormControl>
               <FormHelperText>
                 <ErrorMessage name="country" />
+              </FormHelperText>
+              <FormControl variant="standard" sx={{ minWidth: 300 }}>
+                <InputLabel id="demo-simple-select-autowidth-label">
+                  State
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-autowidth-label"
+                  id="demo-simple-select-autowidth"
+                  onChange={handleStateChange}
+                  autoWidth
+                  label="State"
+                  name="state"
+                  value={selectedState}
+                >
+                  <MenuItem value="">Select State</MenuItem>
+                  {getState.map((items) => (
+                    <MenuItem key={items} value={items}>
+                      {items}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormHelperText>
+                <ErrorMessage name="state" />
+              </FormHelperText>
+              <FormControl variant="standard" sx={{ minWidth: 300 }}>
+                <InputLabel id="demo-simple-select-autowidth-label">
+                  City
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-autowidth-label"
+                  id="demo-simple-select-autowidth"
+                  autoWidth
+                  label="City"
+                  name="city"
+                >
+                  <MenuItem value="">Select City</MenuItem>
+                  {cities.map((items) => (
+                    <MenuItem key={items.name} value={items.name}>
+                      {items.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormHelperText>
+                <ErrorMessage name="city" />
               </FormHelperText>
 
               <Field
